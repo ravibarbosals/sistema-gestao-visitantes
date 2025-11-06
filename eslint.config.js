@@ -1,52 +1,26 @@
-import globals from 'globals';
-import pluginJs from '@eslint/js';
-import tseslint from 'typescript-eslint';
-import pluginReactConfig from 'eslint-plugin-react/configs/recommended.js';
-import pluginReactHooks from 'eslint-plugin-react-hooks';
-import pluginPrettier from 'eslint-plugin-prettier';
-import configPrettier from 'eslint-config-prettier';
-import pluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
+import js from "@eslint/js";
+import globals from "globals";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import tseslint from "typescript-eslint";
 
-export default [
-  { ignores: ['dist/'] },
-
-  pluginJs.configs.recommended,
-  ...tseslint.configs.recommended,
-  pluginReactConfig,
-  configPrettier,
-
-
+export default tseslint.config(
+  { ignores: ["dist"] },
   {
-    files: ['src/**/*.{js,mjs,cjs,ts,jsx,tsx}'], 
-    plugins: {
-      'prettier': pluginPrettier,
-      'simple-import-sort': pluginSimpleImportSort,
-      'react-hooks': pluginReactHooks,
-    },
+    extends: [js.configs.recommended, ...tseslint.configs.recommended],
+    files: ["**/*.{ts,tsx}"],
     languageOptions: {
-      parser: tseslint.parser, 
-      parserOptions: {
-        ecmaFeatures: { jsx: true },
-        ecmaVersion: 2020,
-        sourceType: 'module',
-      },
-      globals: { 
-        ...globals.browser,
-        ...globals.node,
-      },
+      ecmaVersion: 2020,
+      globals: globals.browser,
     },
-    settings: {
-      react: {
-        version: 'detect', 
-      },
+    plugins: {
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
     },
     rules: {
-      'prettier/prettier': ['error', { usePrettierrc: true }],
-      'react/react-in-jsx-scope': 'off',
-      'react/prop-types': 'off',
-      '@typescript-eslint/explicit-function-return-type': 'off',
-      'simple-import-sort/imports': 'error',
-      'simple-import-sort/exports': 'error',
+      ...reactHooks.configs.recommended.rules,
+      "react-refresh/only-export-components": ["warn", { allowConstantExport: true }],
+      "@typescript-eslint/no-unused-vars": "off",
     },
   },
-];
+);

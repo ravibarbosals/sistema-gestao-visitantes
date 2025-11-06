@@ -1,0 +1,130 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    --background: 42 28% 92%;
+    --foreground: 30 25% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 30 25% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 30 25% 20%;
+
+    --primary: 90 25% 45%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 200 85% 45%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 85 20% 75%;
+    --muted-foreground: 30 15% 35%;
+
+    --accent: 25 45% 50%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 85 25% 85%;
+    --input: 85 25% 85%;
+    --ring: 90 25% 45%;
+
+    --radius: 1rem;
+
+    /* Brennand Digital Theme Colors */
+    --sage: 90 25% 45%;
+    --sage-light: 90 20% 70%;
+    --sage-dark: 90 30% 30%;
+    
+    --ocean: 200 85% 45%;
+    --ocean-light: 200 75% 65%;
+    --ocean-dark: 200 90% 35%;
+    
+    --terracotta: 25 45% 50%;
+    --terracotta-light: 25 40% 70%;
+    --terracotta-dark: 25 50% 35%;
+    
+    --cream: 42 35% 90%;
+    --cream-dark: 42 30% 80%;
+
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 30 20% 12%;
+    --foreground: 42 30% 90%;
+
+    --card: 30 15% 18%;
+    --card-foreground: 42 30% 90%;
+
+    --popover: 30 15% 18%;
+    --popover-foreground: 42 30% 90%;
+
+    --primary: 90 30% 55%;
+    --primary-foreground: 30 20% 12%;
+
+    --secondary: 200 75% 55%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 85 15% 25%;
+    --muted-foreground: 42 25% 70%;
+
+    --accent: 25 45% 60%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 85 15% 25%;
+    --input: 85 15% 25%;
+    --ring: 90 30% 55%;
+
+    --sage: 90 30% 55%;
+    --sage-light: 90 25% 75%;
+    --sage-dark: 90 35% 35%;
+    
+    --ocean: 200 75% 55%;
+    --ocean-light: 200 65% 75%;
+    --ocean-dark: 200 85% 40%;
+    
+    --terracotta: 25 45% 60%;
+    --terracotta-light: 25 40% 80%;
+    --terracotta-dark: 25 50% 45%;
+    
+    --cream: 42 25% 25%;
+    --cream-dark: 42 20% 20%;
+
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}

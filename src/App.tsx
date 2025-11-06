@@ -1,47 +1,43 @@
-import { useEffect } from 'react';
-import { createBrowserRouter, RouteObject, RouterProvider } from 'react-router-dom';
+import { Toaster } from "@/components/ui/toaster";
+import { Toaster as Sonner } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Auth from "./pages/Auth";
+import Home from "./pages/Home";
+import Visite from "./pages/Visite";
+import Exposicoes from "./pages/Exposicoes";
+import Rotas from "./pages/Rotas";
+import Avisos from "./pages/Avisos";
+import Autor from "./pages/Autor";
+import Historia from "./pages/Historia";
+import Eventos from "./pages/Eventos";
+import NotFound from "./pages/NotFound";
 
-import { categoryScreens } from './modules/category/routes';
-import { firstScreenRoutes } from './modules/firstScreen/routes';
-import { loginRoutes } from './modules/login/routes';
-import { productScreen } from './modules/product/routes';
-import { URL_USER } from './shared/constants/urls';
-import { MethodsEnum } from './shared/enums/methods.enum';
-import { getAuthorizationToken, verifyLoggedIn } from './shared/functions/connection/auth';
-import { useNotification } from './shared/hooks/useNotification';
-import { useRequests } from './shared/hooks/useRequest';
-import { useGlobalReducer } from './store/reducers/globalReducer/useGlobalReducer';
+const queryClient = new QueryClient();
 
-const routes: RouteObject[] = [...loginRoutes];
-const routesLoggedIn: RouteObject[] = [
-  ...productScreen,
-  ...categoryScreens,
-  ...firstScreenRoutes,
-].map((route) => ({
-  ...route,
-  loader: verifyLoggedIn,
-}));
-
-const router = createBrowserRouter([...routes, ...routesLoggedIn]);
-
-function App() {
-  const { contextHolder } = useNotification();
-  const { setUser } = useGlobalReducer();
-  const { request } = useRequests();
-
-  useEffect(() => {
-    const token = getAuthorizationToken();
-    if (token) {
-      request(URL_USER, MethodsEnum.GET, setUser);
-    }
-  }, []);
-
-  return (
-    <>
-      {contextHolder}
-      <RouterProvider router={router} />
-    </>
-  );
-}
+const App = () => (
+  <QueryClientProvider client={queryClient}>
+    <TooltipProvider>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/auth" element={<Auth />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/visite" element={<Visite />} />
+          <Route path="/exposicoes" element={<Exposicoes />} />
+          <Route path="/rotas" element={<Rotas />} />
+          <Route path="/avisos" element={<Avisos />} />
+          <Route path="/autor" element={<Autor />} />
+          <Route path="/historia" element={<Historia />} />
+          <Route path="/eventos" element={<Eventos />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
+    </TooltipProvider>
+  </QueryClientProvider>
+);
 
 export default App;
