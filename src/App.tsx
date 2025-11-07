@@ -13,6 +13,7 @@ import Autor from "./pages/Autor";
 import Historia from "./pages/Historia";
 import Eventos from "./pages/Eventos";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "@/components/ProtectedRoute"; 
 
 const queryClient = new QueryClient();
 
@@ -23,16 +24,76 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <Routes>
+          {/* 🔓 Rota pública (login/cadastro) */}
           <Route path="/auth" element={<Auth />} />
-          <Route path="/" element={<Home />} />
-          <Route path="/visite" element={<Visite />} />
-          <Route path="/exposicoes" element={<Exposicoes />} />
-          <Route path="/rotas" element={<Rotas />} />
-          <Route path="/avisos" element={<Avisos />} />
-          <Route path="/autor" element={<Autor />} />
-          <Route path="/historia" element={<Historia />} />
-          <Route path="/eventos" element={<Eventos />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+
+          {/* 🔒 Rotas protegidas */}
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/visite"
+            element={
+              <ProtectedRoute>
+                <Visite />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/exposicoes"
+            element={
+              <ProtectedRoute>
+                <Exposicoes />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/rotas"
+            element={
+              <ProtectedRoute>
+                <Rotas />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/avisos"
+            element={
+              <ProtectedRoute>
+                <Avisos />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/autor"
+            element={
+              <ProtectedRoute>
+                <Autor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/historia"
+            element={
+              <ProtectedRoute>
+                <Historia />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/eventos"
+            element={
+              <ProtectedRoute>
+                <Eventos />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* 🚨 Rota para página não encontrada */}
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

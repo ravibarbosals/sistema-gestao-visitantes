@@ -8,7 +8,6 @@ const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
   const isAuthenticated = localStorage.getItem("brennand_auth") === "true";
 
   if (!isAuthenticated) {
-    // 🔒 Redireciona pro login
     return <Navigate to="/auth" replace />;
   }
 
