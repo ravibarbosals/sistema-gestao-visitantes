@@ -2,14 +2,39 @@ import { Header } from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import sculptureDramatic from "@/assets/sculpture-dramatic.jpg";
 import patternSage from "@/assets/pattern-sage.jpg";
+import api from "@/services/api";
+import { useEffect, useState } from "react";
+
+interface Aviso {
+  id: string;
+  titulo: string;
+  descricao: string;
+}
 
 const Avisos = () => {
+  const [avisos, setAvisos] = useState<Aviso[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAvisos = async () => {
+      try {
+        const response = await api.get("/avisos");
+        setAvisos(response.data);
+      } catch (error) {
+        console.error("Erro ao buscar avisos:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchAvisos();
+  }, []);
+
   return (
     <div className="min-h-screen p-4 max-w-md mx-auto bg-cream">
       <Header variant="cream" />
-      
       <div className="space-y-6 pb-8">
-        <div 
+        <div
           className="h-48 rounded-3xl relative overflow-hidden"
           style={{
             backgroundImage: `url(${sculptureDramatic})`,
@@ -22,15 +47,29 @@ const Avisos = () => {
           </div>
         </div>
 
-        <Card className="bg-sage-dark text-white p-6 rounded-3xl">
-          <h2 className="text-xl font-bold mb-4">O Brennand Digital:</h2>
-          <h3 className="font-semibold mb-2">espaço virtual do Palácio das Esculturas</h3>
-          <p className="text-sm opacity-90">
-            Lorem ipsum is simply dummy text of the printing. And typesetting industry. Lorem ipsum has been the industry's standard dummy text ever.
-          </p>
-        </Card>
+        {/* Estado de carregamento */}
+        {loading && (
+          <p className="text-center text-gray-500">Carregando avisos...</p>
+        )}
 
-        <div 
+        {/* Avisos dinâmicos vindos do back */}
+        {!loading && avisos.length > 0 ? (
+          avisos.map((aviso) => (
+            <Card key={aviso.id} className="bg-sage-dark text-white p-6 rounded-3xl">
+              <h2 className="text-xl font-bold mb-2">{aviso.titulo}</h2>
+              <p className="text-sm opacity-90">{aviso.descricao}</p>
+            </Card>
+          ))
+        ) : (
+          !loading && (
+            <p className="text-center text-gray-500">
+              Nenhum aviso encontrado.
+            </p>
+          )
+        )}
+
+        {/* Mantém o conteúdo fixo original abaixo */}
+        <div
           className="h-48 rounded-3xl"
           style={{
             backgroundImage: `url(${patternSage})`,
@@ -38,69 +77,6 @@ const Avisos = () => {
             backgroundPosition: "center",
           }}
         />
-
-        <Card className="bg-sage-dark text-white p-6 rounded-3xl">
-          <h2 className="text-xl font-bold mb-4">Utilize fones de ouvido para uma melhor</h2>
-          <h3 className="text-2xl font-bold mb-2">experiência</h3>
-          <p className="text-sm opacity-90">
-            Lorem ipsum is simply dummy text of the printing. And typesetting industry. Lorem ipsum has been the industry's standard dummy text ever since the 1500s.
-          </p>
-        </Card>
-
-        <div 
-          className="h-64 rounded-3xl relative overflow-hidden"
-          style={{
-            backgroundImage: `url(${sculptureDramatic})`,
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-          }}
-        >
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
-            <h2 className="text-3xl font-bold text-white">Regras</h2>
-          </div>
-        </div>
-
-        <Card className="bg-sage-dark text-white p-6 rounded-3xl space-y-4">
-          <div>
-            <h3 className="text-lg font-bold mb-2">Preservação das Obras</h3>
-            <ul className="text-sm space-y-1 opacity-90 list-disc list-inside">
-              <li>Não toque, suba ou encoste nas esculturas.</li>
-              <li>Fotografias são permitidas apenas em áreas sinalizadas.</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-bold mb-2">Comportamento no Espaço</h3>
-            <ul className="text-sm space-y-1 opacity-90 list-disc list-inside">
-              <li>Mantenha silêncio e respeito ao ambiente artístico.</li>
-              <li>Não é permitido correr, gritar ou usar flash.</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-bold mb-2">Acesso Digital</h3>
-            <ul className="text-sm space-y-1 opacity-90 list-disc list-inside">
-              <li>Não copie ou distribua materiais digitais sem autorização.</li>
-              <li>Utilize os recursos interativos apenas para fins educativos e culturais.</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-bold mb-2">Segurança</h3>
-            <ul className="text-sm space-y-1 opacity-90 list-disc list-inside">
-              <li>Crianças devem estar acompanhadas de um responsável.</li>
-              <li>Bolsas grandes e mochilas devem ser deixadas no guarda-volumes.</li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="text-lg font-bold mb-2">Sustentabilidade</h3>
-            <ul className="text-sm space-y-1 opacity-90 list-disc list-inside">
-              <li>Evite o uso de garrafas plásticas descartáveis dentro do Palácio.</li>
-              <li>Respeita os jardins e áreas externas.</li>
-            </ul>
-          </div>
-        </Card>
 
         <footer className="text-center text-sm text-muted-foreground py-4">
           © Direitos reservados 2025

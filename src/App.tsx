@@ -14,10 +14,27 @@ import Historia from "./pages/Historia";
 import Eventos from "./pages/Eventos";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute"; 
+import api from "./services/api";
+import { useEffect } from "react";
 
 const queryClient = new QueryClient();
 
-const App = () => (
+const App = () => {
+  // ✅ useEffect agora está dentro do componente
+  useEffect(() => {
+    api
+      .get("/usuarios") // endpoint de teste
+      .then((response) => {
+        console.log("✅ Conexão com o back funcionando!");
+        console.log(response.data);
+      })
+      .catch((error) => {
+        console.error("❌ Erro ao conectar com o back:", error);
+      });
+  }, []);
+
+  return (
+
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <Toaster />
@@ -100,5 +117,6 @@ const App = () => (
     </TooltipProvider>
   </QueryClientProvider>
 );
+};
 
 export default App;
