@@ -6,8 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import heroImage from "@/assets/hero-park.jpg";
-
-const API_URL = "http://localhost:8080"; // altere se o backend estiver em outra porta
+import api from "@/services/api";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
@@ -26,48 +25,45 @@ const Auth = () => {
 
     try {
       if (isLogin) {
-        // 🔹 LOGIN → POST /auth/login
-        const response = await fetch(`${API_URL}/auth/login`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userName: email,
-            password: password,
-          }),
-        });
+  const response = await api.post("/users", {
+    userName: email, // ✅ backend espera "userName"
+    password: password,
+  });
 
-        if (response.ok) {
-          const data = await response.text();
-          toast.success(data || "Login realizado com sucesso!");
-          localStorage.setItem("brennand_auth", "true");
-          navigate("/");
-        } else {
-          const errorText = await response.text();
-          toast.error(errorText || "Erro ao fazer login");
-        }
+  toast.success(
+    typeof response.data === "string"
+      ? response.data
+      : "Login realizado com sucesso!"
+  );
+
+  localStorage.setItem("brennand_auth", "true");
+
+  if (response.data && response.data.token) {
+    localStorage.setItem("brennand_token", response.data.token);
+  }
+
+  navigate("/");
       } else {
-        // 🔹 CADASTRO → POST /users
-        const response = await fetch(`${API_URL}/users`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            userName: email,
-            password: password,
-            name: name,
-          }),
+        // CADASTRO -> /users
+        const response = await api.post("/users", {
+          userName: email, // ajuste caso backend use "email"
+          password: password,
+          name: name,
         });
 
-        if (response.ok) {
-          toast.success("Cadastro realizado com sucesso!");
-          setIsLogin(true); // volta pra tela de login
-        } else {
-          const errorText = await response.text();
-          toast.error(errorText || "Erro ao cadastrar usuário");
-        }
+        toast.success("Cadastro realizado com sucesso!");
+        setIsLogin(true);
       }
-    } catch (error) {
-      console.error(error);
-      toast.error("Erro de conexão com o servidor");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      console.error(err);
+      // axios error structure
+      const msg =
+        err?.response?.data ||
+        err?.response?.statusText ||
+        err?.message ||
+        "Erro de conexão com o servidor";
+      toast.error(typeof msg === "string" ? msg : "Erro no login");
     }
   };
 
@@ -85,9 +81,7 @@ const Auth = () => {
 
       <Card className="w-full max-w-md z-10 bg-card/95 backdrop-blur">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-3xl font-bold text-center">
-            Brennand Digital
-          </CardTitle>
+          <CardTitle className="text-3xl font-bold text-center">Brennand Digital</CardTitle>
           <CardDescription className="text-center">
             {isLogin ? "Entre com sua conta" : "Crie sua conta para continuar"}
           </CardDescription>
@@ -97,36 +91,18 @@ const Auth = () => {
             {!isLogin && (
               <div className="space-y-2">
                 <Label htmlFor="name">Nome</Label>
-                <Input
-                  id="name"
-                  type="text"
-                  placeholder="Seu nome"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                />
+                <Input id="name" type="text" placeholder="Seu nome" value={name} onChange={(e) => setName(e.target.value)} />
               </div>
             )}
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <Input id="email" type="email" placeholder="seu@email.com" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <Input id="password" type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
             </div>
 
             <Button type="submit" className="w-full bg-primary hover:bg-primary/90">
@@ -134,11 +110,7 @@ const Auth = () => {
             </Button>
 
             <div className="text-center text-sm">
-              <button
-                type="button"
-                onClick={() => setIsLogin(!isLogin)}
-                className="text-primary hover:underline"
-              >
+              <button type="button" onClick={() => setIsLogin(!isLogin)} className="text-primary hover:underline">
                 {isLogin ? "Não tem conta? Cadastre-se" : "Já tem conta? Faça login"}
               </button>
             </div>

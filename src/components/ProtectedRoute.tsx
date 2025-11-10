@@ -1,16 +1,10 @@
 import { Navigate } from "react-router-dom";
 
-interface ProtectedRouteProps {
-  children: JSX.Element;
-}
+interface Props { children: JSX.Element }
 
-const ProtectedRoute = ({ children }: ProtectedRouteProps) => {
+const ProtectedRoute = ({ children }: Props) => {
   const isAuthenticated = localStorage.getItem("brennand_auth") === "true";
-
-  if (!isAuthenticated) {
-    return <Navigate to="/auth" replace />;
-  }
-
+  if (!isAuthenticated) return <Navigate to="/auth" replace />;
   return children;
 };
 
