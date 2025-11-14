@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,58 +13,55 @@ import {
 import { toast } from "sonner";
 import heroImage from "@/assets/hero-park.jpg";
 import api from "@/services/api";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
+import CryptoJS from "crypto-js";
 
 const Auth = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+
+  // 🔐 SENHA SEM VALUE (não aparece no HTML)
+  const passwordRef = useRef<HTMLInputElement | null>(null);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const password = passwordRef.current?.value || "";
 
     if (!email || !password || (!isLogin && !name)) {
       toast.error("Por favor, preencha todos os campos");
       return;
     }
 
+    // 🔐 Criptografar antes de enviar
+    const hashedPassword = CryptoJS.SHA256(password).toString();
+
     try {
       if (isLogin) {
-        // 🔐 LOGIN
+        // LOGIN
         const response = await api.post("/auth/login", {
           email,
-          password,
+          password: hashedPassword,
         });
 
-        toast.success(
-          typeof response.data === "string"
-            ? response.data
-            : "Login realizado com sucesso!"
-        );
+        toast.success("Login realizado com sucesso!");
 
-        // Salva token e autenticação
         localStorage.setItem("brennand_auth", "true");
 
-        if (
-          response.data &&
-          typeof response.data === "object" &&
-          "token" in response.data
-        ) {
-          localStorage.setItem(
-            "brennand_token",
-            (response.data as { token: string }).token
-          );
+        if (response.data?.token) {
+          localStorage.setItem("brennand_token", response.data.token);
         }
 
         navigate("/");
       } else {
-        // 🧾 CADASTRO — backend espera "userName", não "name"
+        // CADASTRO
         const response = await api.post("/users", {
           userName: name,
           email,
-          password,
+          password: hashedPassword,
         });
 
         if (response.status === 201 || response.status === 200) {
@@ -75,32 +72,16 @@ const Auth = () => {
         }
       }
     } catch (err) {
-      console.error("❌ Erro ao conectar com o backend:", err);
+      console.error("Erro ao conectar com backend:", err);
 
-      // ✅ Tratamento de erro tipado Axios
       if (axios.isAxiosError(err)) {
-        const data = err.response?.data;
-        let msgBackend: string;
-
-        if (typeof data === "string") {
-          msgBackend = data;
-        } else if (
-          typeof data === "object" &&
-          data !== null &&
-          "message" in data &&
-          typeof (data as { message: unknown }).message === "string"
-        ) {
-          msgBackend = (data as { message: string }).message;
-        } else {
-          msgBackend =
-            err.message ||
-            err.response?.statusText ||
-            "Erro desconhecido ao se conectar com o servidor";
-        }
-
-        toast.error(msgBackend);
+        const msg =
+          err.response?.data?.message ||
+          err.response?.data ||
+          "Erro ao realizar operação.";
+        toast.error(msg);
       } else {
-        toast.error("Erro inesperado ao realizar a operação.");
+        toast.error("Erro inesperado!");
       }
     }
   };
@@ -125,9 +106,7 @@ const Auth = () => {
             Brennand Digital
           </CardTitle>
           <CardDescription className="text-center">
-            {isLogin
-              ? "Entre com sua conta"
-              : "Crie sua conta para continuar"}
+            {isLogin ? "Entre com sua conta" : "Crie sua conta para continuar"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -158,15 +137,14 @@ const Auth = () => {
               />
             </div>
 
-            {/* Senha */}
+            {/* Senha SEGURA */}
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                ref={passwordRef} // sem value!
               />
             </div>
 
